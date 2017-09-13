@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pea.it.provider.mapper.UserMapper">
+  <resultMap id="BaseResultMap" type="com.pea.it.provider.entity.User">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="birth_date" jdbcType="DATE" property="birthDate" />
+    <result column="first_name" jdbcType="VARCHAR" property="firstName" />
+    <result column="last_name" jdbcType="VARCHAR" property="lastName" />
+    <result column="gender" jdbcType="VARCHAR" property="gender" />
+    <result column="hire_date" jdbcType="DATE" property="hireDate" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, birth_date, first_name, last_name, gender, hire_date
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tb_user
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectByFirstNameAndLastName" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from tb_user
+    where first_name = #{firstName,jdbcType=VARCHAR}
+    and last_name = #{lastName,jdbcType=VARCHAR};
+  </select>
+  <insert id="insert" parameterType="com.pea.it.provider.entity.User">
+    insert into tb_user (id, birth_date, first_name, 
+      last_name, gender, hire_date
+      )
+    values (#{id,jdbcType=BIGINT}, #{birthDate,jdbcType=DATE}, #{firstName,jdbcType=VARCHAR}, 
+      #{lastName,jdbcType=VARCHAR}, #{gender,jdbcType=VARCHAR}, #{hireDate,jdbcType=DATE}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.pea.it.provider.entity.User">
+    insert into tb_user
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="birthDate != null">
+        birth_date,
+      </if>
+      <if test="firstName != null">
+        first_name,
+      </if>
+      <if test="lastName != null">
+        last_name,
+      </if>
+      <if test="gender != null">
+        gender,
+      </if>
+      <if test="hireDate != null">
+        hire_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="birthDate != null">
+        #{birthDate,jdbcType=DATE},
+      </if>
+      <if test="firstName != null">
+        #{firstName,jdbcType=VARCHAR},
+      </if>
+      <if test="lastName != null">
+        #{lastName,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null">
+        #{gender,jdbcType=VARCHAR},
+      </if>
+      <if test="hireDate != null">
+        #{hireDate,jdbcType=DATE},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.pea.it.provider.entity.User">
+    update tb_user
+    <set>
+      <if test="birthDate != null">
+        birth_date = #{birthDate,jdbcType=DATE},
+      </if>
+      <if test="firstName != null">
+        first_name = #{firstName,jdbcType=VARCHAR},
+      </if>
+      <if test="lastName != null">
+        last_name = #{lastName,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null">
+        gender = #{gender,jdbcType=VARCHAR},
+      </if>
+      <if test="hireDate != null">
+        hire_date = #{hireDate,jdbcType=DATE},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.pea.it.provider.entity.User">
+    update tb_user
+    set birth_date = #{birthDate,jdbcType=DATE},
+      first_name = #{firstName,jdbcType=VARCHAR},
+      last_name = #{lastName,jdbcType=VARCHAR},
+      gender = #{gender,jdbcType=VARCHAR},
+      hire_date = #{hireDate,jdbcType=DATE}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
