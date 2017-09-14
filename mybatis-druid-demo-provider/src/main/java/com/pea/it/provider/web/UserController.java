@@ -14,12 +14,12 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping("/user/{id}")
+    @RequestMapping("/api/user/{id}")
     public User getById(@PathVariable Long id) {
         return userService.getById(id);
     }
 
-    @RequestMapping("/user/name")
+    @RequestMapping("/api//user/name")
     public List<User> getByName(@RequestParam("firstName") String firstName, @RequestParam("lastName") String
             lastName) {
         return userService.getByName(firstName, lastName);
