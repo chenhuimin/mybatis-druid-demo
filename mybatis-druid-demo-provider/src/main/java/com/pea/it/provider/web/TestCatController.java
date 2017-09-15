@@ -6,14 +6,16 @@ import com.dianping.cat.message.Event;
 import com.dianping.cat.message.Transaction;
 import com.pea.it.provider.entity.User;
 import com.pea.it.provider.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Slf4j
 public class TestCatController {
+
     @Autowired
     private UserService userService;
 
@@ -29,6 +31,9 @@ public class TestCatController {
             Cat.logMetricForSum("PayAmount", amount);
             User user = userService.getById(id);
             t.setStatus(Transaction.SUCCESS);
+            Exception e = new Exception("调用sp出错了");
+            log.error("错误测试", e);
+            // Cat.getProducer().logError("错误测试");
             return user;
         } catch (Exception e) {
             t.setStatus(e);

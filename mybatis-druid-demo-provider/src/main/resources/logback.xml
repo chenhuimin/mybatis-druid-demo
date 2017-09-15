@@ -119,10 +119,9 @@
         </encoder>
     </appender>
 
-    <logger name="com.pea.it" level="INFO" additivity="false">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="FILEINFO"/>
-        <appender-ref ref="FILEERROR"/>
+    <appender name="CatAppender" class="com.pea.it.provider.cat.CatLogbackAppender"/>
+
+    <logger name="com.pea.it" level="INFO" additivity="true">
     </logger>
 
     <logger name="com.alibaba.druid" level="INFO" additivity="false">
@@ -133,6 +132,8 @@
 
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILEINFO"/>
         <appender-ref ref="FILEERROR"/>
+        <appender-ref ref="CatAppender"/>
     </root>
 </configuration>

@@ -13,7 +13,7 @@ public class ConsumerController {
     @Autowired
     private ConsumerService consumerService;
 
-    @RequestMapping("/consume/{id}")
+    @RequestMapping("/api/consume/{id}")
     public User getById(@PathVariable Long id) {
         return consumerService.getUserById(id);
     }
