@@ -33,10 +33,13 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
     <!-- 打印查询语句 -->
-<!--    <settings>
-        <setting name="logImpl" value="STDOUT_LOGGING"/>
-    </settings>-->
+    <!--    <settings>
+            <setting name="logImpl" value="STDOUT_LOGGING"/>
+        </settings>-->
     <plugins>
-        <plugin interceptor="com.pea.it.provider.plugin.CatMybatisPlugin" />
+        <plugin interceptor="com.pea.it.provider.plugin.CatMybatisPlugin">
+            <property name="singleDataSource" value="true"/>
+        </plugin>
+
     </plugins>
 </configuration>

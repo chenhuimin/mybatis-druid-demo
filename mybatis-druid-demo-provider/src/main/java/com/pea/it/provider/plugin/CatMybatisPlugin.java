@@ -54,6 +54,10 @@ public class CatMybatisPlugin implements Interceptor {
 
     private Executor target;
 
+    private Properties props = null;
+    //数据库连接url
+    private String url;
+
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
         MappedStatement mappedStatement = (MappedStatement) invocation.getArgs()[0];
@@ -125,8 +129,12 @@ public class CatMybatisPlugin implements Interceptor {
         if (dataSource == null) {
             return null;
         }
-
-        if (dataSource instanceof AbstractRoutingDataSource) {
+        if (dataSource instanceof DruidDataSource) {
+            DruidDataSource druidDataSource = (DruidDataSource) dataSource;
+            return druidDataSource.getUrl();
+        } else if (dataSource instanceof BasicDataSource) {
+            return ((BasicDataSource) dataSource).getUrl();
+        } else if (dataSource instanceof AbstractRoutingDataSource) {
             String methodName = "determineTargetDataSource";
             Method method = ReflectionUtils.findMethod(AbstractRoutingDataSource.class, methodName);
 
@@ -144,29 +152,49 @@ public class CatMybatisPlugin implements Interceptor {
             } else {
                 logger.error("---only surpport DruidDataSource:" + dataSource1.getClass().toString());
             }
-        } else if (dataSource instanceof BasicDataSource) {
-            return ((BasicDataSource) dataSource).getUrl();
         }
         return null;
     }
 
     private String getSQLDatabase() {
-//        String dbName = RouteDataSourceContext.getRouteKey();
-        String dbName = null; //根据设置的多数据源修改此处,获取dbname
-        if (dbName == null) {
-            dbName = "DEFAULT";
+        String singleDataSource = props.getProperty("singleDataSource");
+        if (singleDataSource == null || singleDataSource.trim() == "") {
+            throw new IllegalArgumentException("CatMybatisPlugin参数:singleDataSource未设置");
         }
-        String url = CatMybatisPlugin.sqlURLCache.get(dbName);
-        if (url != null) {
+        boolean singleDS = Boolean.parseBoolean(singleDataSource);
+        if (singleDS) { //单数据源
+            if (url == null) {
+                synchronized (this) {
+                    String dbUrl = this.getSqlURL();//目前监控只支持mysql ,其余数据库需要各自修改监控服务端
+                    if (dbUrl == null) {
+                        url = String.format(EMPTY_CONNECTION, "DEFAULT");
+                    }
+                    url = dbUrl;
+                }
+            }
             return url;
-        }
 
-        url = this.getSqlURL();//目前监控只支持mysql ,其余数据库需要各自修改监控服务端
-        if (url == null) {
-            url = String.format(EMPTY_CONNECTION, dbName);
+        } else {//多数据源
+
+//            String dbName = RouteDataSourceContext.getRouteKey();
+//            if (dbName == null) {
+//                dbName = "DEFAULT";
+//            }
+//            String dbUrl = CatMybatisPlugin.sqlURLCache.get(dbName);
+//            if (dbUrl != null) {
+//                return dbUrl;
+//            }
+//
+//            dbUrl = this.getSqlURL();//目前监控只支持mysql ,其余数据库需要各自修改监控服务端
+//            if (dbUrl == null) {
+//                dbUrl = String.format(EMPTY_CONNECTION, dbName);
+//            }
+//
+// ]'
+//  CatMybatisPlugin.sqlURLCache.put(dbName, dbUrl);
+//            return dbUrl;
+            return null;
         }
-        CatMybatisPlugin.sqlURLCache.put(dbName, url);
-        return url;
     }
 
     /**
@@ -237,6 +265,9 @@ public class CatMybatisPlugin implements Interceptor {
 
     @Override
     public void setProperties(Properties properties) {
+        if (properties == null) {
+            throw new IllegalArgumentException("CatMybatisPlugin参数未设置");
+        }
+        this.props = properties;
     }
-
 }
